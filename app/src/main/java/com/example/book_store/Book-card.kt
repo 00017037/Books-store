@@ -120,7 +120,9 @@ fun Books(books:List<BookDTO> = sampleBooks){
 @Composable()
 fun BookItem(book: BookDTO = book1) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        BookImage()
+        BookImage( modifier = Modifier
+            .width(66.dp)
+            .height(100.dp))
         BookDetails(
             title = book.title,
             author = book.author,
@@ -133,17 +135,16 @@ fun BookItem(book: BookDTO = book1) {
 }
 
 @Composable()
-fun BookImage() {
+fun BookImage(modifier: Modifier=Modifier) {
     Box(
-        modifier = Modifier
-            .width(66.dp)
-            .height(100.dp)
+      modifier = modifier
     ) {
         AsyncImage(
             model = "https://images.booksense.com/images/403/353/9780590353403.jpg",
             contentDescription = "The book image cover",
             error = painterResource(id = R.drawable.harry),
             placeholder = painterResource(id = R.drawable.harry),
+            modifier = modifier
         )
 
     }
