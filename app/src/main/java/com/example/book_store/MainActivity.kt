@@ -1,15 +1,18 @@
 package com.example.book_store
 
+import android.os.Build
 import android.os.Bundle
 import android.view.SubMenu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,12 +26,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.book_store.ui.theme.BookstoreTheme
 import models.Movie
+import org.jetbrains.annotations.ApiStatus.Experimental
+
 val movie = Movie("Fight Club","Guys fighting stuff", listOf("Brad Pitt","Edvard Norton"),33)
+@ExperimentalMaterial3Api
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             BookstoreTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -36,9 +44,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                    Column {
-                       Header()
-                       subMenu()
-                       Books()
+//                       Header()
+//                       subMenu()
+//                       Books()
+
+                         AddBookPage()
                    }
                 }
             }
