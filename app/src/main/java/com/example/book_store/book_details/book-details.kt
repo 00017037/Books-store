@@ -25,7 +25,6 @@ import com.example.book_store.Header
 import com.example.book_store.R
 import com.example.book_store.book1
 import models.BookDTO
-import java.util.Date
 
 
 @Composable
@@ -93,7 +92,7 @@ fun BookInfo(book: BookDTO) {
 }
 
 @Composable
-fun BookList(genre: String, author: String, publishedDate: Date, price: Number, available: Number) {
+fun BookList(genre: String, author: String, publishedDate: String, price: Number, available: Number) {
     Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.height(120.dp)) {
         Text(text = "Genre: $genre")
         Text(text = "Author: $author")
