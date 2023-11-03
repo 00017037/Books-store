@@ -1,5 +1,6 @@
 package com.example.book_store.list
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +11,10 @@ import models.BookDTO
 class BookListViewModel(private val booksRepository: BookRepository) : ViewModel() {
 
     val booksLiveData: MutableLiveData<List<BookDTO>> by lazy { MutableLiveData<List<BookDTO>>() }
+
+
     fun getAllBooks() {
+        Log.d("request","has been made")
         viewModelScope.launch {
             val books = booksRepository.getBookList()
             booksLiveData.value = books;

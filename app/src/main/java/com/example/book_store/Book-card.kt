@@ -20,8 +20,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.book_store.data.BookRepository
 import com.example.book_store.list.BookListViewModel
@@ -30,8 +30,8 @@ import models.BookDTO
 
 val book1 = BookDTO(
     1,
-    "Harry Potter",
-    "A little boy with a little girl",
+    title = "Harry Potter",
+   desc = "A little boy with a little girl",
     author = "J.K.Rolling",
     available = 12,
     genre = "Fantasy",
@@ -71,19 +71,21 @@ val sampleBooks: List<BookDTO> = listOf(
 )
 
 
-@Preview(showBackground = true)
 @Composable()
 fun Books(
+
+     navController: NavController,
      viewModel: BookListViewModel = BookListViewModel(
-        BookRepository()
-    )
+         BookRepository()
+     ),
 ) {
     val books  by viewModel.booksLiveData.observeAsState()
+
 
     if(!books.isNullOrEmpty()){
         LazyColumn() {
             items(items=books!!, itemContent = { book ->
-                BookItem(book)
+                BookItem(book,navController)
                 Spacer(modifier = Modifier.height(16.dp))
             })
         }
@@ -93,7 +95,7 @@ fun Books(
 
 
 @Composable()
-fun BookItem(book: BookDTO = book1) {
+fun BookItem(book: BookDTO,navController: NavController ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         BookImage(
             modifier = Modifier
@@ -106,7 +108,7 @@ fun BookItem(book: BookDTO = book1) {
             price = book.price,
             remaining = book.available
         )
-        ViewButton()
+        ViewButton(book,navController)
 
     }
 }
@@ -139,9 +141,13 @@ fun BookDetails(title: String, author: String, price: Number, remaining: Number)
 }
 
 @Composable()
-fun ViewButton() {
+fun ViewButton(bookBookDTO: BookDTO,navController: NavController) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = {
+
+            SelectedBookService.setSelectedBook(bookBookDTO);
+            navController.navigate("view-details")
+        },
         colors = ButtonDefaults.buttonColors(colorResource(id = R.color.green)),
         modifier = Modifier.padding(top = 20.dp)
     ) {

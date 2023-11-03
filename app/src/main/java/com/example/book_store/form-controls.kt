@@ -1,6 +1,7 @@
 package com.example.book_store
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,12 @@ import java.util.Calendar
 
 fun DatePicker(selectedDate: Calendar){
     Column {
-        var formattedDate by remember { mutableStateOf("") }
+        Log.d("selecteDate",selectedDate.time.toString())
+        val year = selectedDate.get(Calendar.YEAR)
+        val month = selectedDate.get(Calendar.MONTH) + 1  // Months are 0-based, so add 1
+        val day = selectedDate.get(Calendar.DAY_OF_MONTH)
+        var formattedDate by remember { mutableStateOf("${day}/${month + 1}/${year}") }
+        Log.d("time","$year-$month-$day")
         val context = LocalContext.current
         OutlinedTextField(
             value = formattedDate,

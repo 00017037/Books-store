@@ -12,3 +12,22 @@ data class MyListResponse<T>(
     @SerializedName("data")
     val data: List<T>?
 )
+
+
+data class MyDeleteResponse(
+    @SerializedName("code")
+    val code: String,
+    @SerializedName("status")
+    val status: String,
+    @SerializedName("message")
+    val message: String,
+)
+
+data class MyUpdateResponse(
+    @SerializedName("code")
+    val code: String,
+    @SerializedName("status")
+    val status: String,
+    @SerializedName("message")
+    val message: String,
+)
