@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Book-store</string>
+    <string name="main_page">Main Page</string>
+    <string name="title">Title</string>
+    <string name="author">Author</string>
+    <string name="price">Price</string>
+    <string name="book_left">books left</string>
+    <string name="view_books_details">View book details</string>
+    <string name="add_book">Add new Book</string>
+    <string name="main_adv_list">Main Advertisement List</string>
+    <string name="upload_photo">Upload Photo</string>
+    <string name="genere">Genre</string>
+    <string name="back">Back</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="brief_description">Brief Description</string>
+    <string name="delete_book">Delete Book?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_conf_message">Do u want to delete this book from the book store</string>
+    <string name="pub_year">Publication Year</string>
+    <string name="available">Available</string>
+    <string name="view_details_page">View Details Page</string>
+    <string name="book_cover">The book image cover</string>
+    <string name="book_and_audio">Books and audio-books store</string>
+    <string name="published_date_label">Published Date</string>
+    <string name="genre_placeholder">Please select the genre</string>
+    <string name="sci_fi">Science-fiction</string>
+    <string name="fantasy">Fantasy</string>
+    <string name="horror">Horror</string>
+    <string name="detective">Detective</string>
+    <string name="other">Other</string>
+
+
+
 </resources>

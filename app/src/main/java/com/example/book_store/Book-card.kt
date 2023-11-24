@@ -20,6 +20,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -120,7 +121,7 @@ fun BookImage(modifier: Modifier = Modifier) {
     ) {
         AsyncImage(
             model = "https://images.booksense.com/images/403/353/9780590353403.jpg",
-            contentDescription = "The book image cover",
+            contentDescription = stringResource(id = R.string.book_cover),
             error = painterResource(id = R.drawable.harry),
             placeholder = painterResource(id = R.drawable.harry),
             modifier = modifier
@@ -132,10 +133,10 @@ fun BookImage(modifier: Modifier = Modifier) {
 @Composable()
 fun BookDetails(title: String, author: String, price: Number, remaining: Number) {
     Column(modifier = Modifier.padding((8.dp))) {
-        Text(text = "title: $title")
-        Text(text = "author: $author")
-        Text(text = "price: $price$")
-        Text(text = "book left: $remaining")
+        Text(text = stringResource(id = R.string.title) +": $title")
+        Text(text = stringResource(id = R.string.author) +": $author")
+        Text(text = stringResource(id = R.string.price)+": $price$")
+        Text(text = stringResource(id = R.string.book_left)+ ": $remaining")
     }
 
 }
@@ -153,7 +154,7 @@ fun ViewButton(bookBookDTO: BookDTO,navController: NavController) {
     ) {
         Row {
             Image(painterResource(id = R.drawable.view), contentDescription = "add icon")
-            Text(text = "View Book Details")
+            Text(text = stringResource(id = R.string.view_books_details))
         }
 
     }

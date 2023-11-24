@@ -2,7 +2,6 @@ package com.example.book_store
 
 import android.app.AlertDialog
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +54,7 @@ enum class Genre {
 @Composable
 fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
     val book = SelectedBookService.getSelectedBook();
+    var isFormValid by remember { mutableStateOf(false) }
 
     var bookTitle by remember { mutableStateOf("") }
     var authorName by remember { mutableStateOf("") }
@@ -73,7 +73,6 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
             price = book.price.toInt()
             booksAvailable =  book.available.toInt()
             genre = book.genre
-
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             publishedDate.time = format.parse(book.publishedDate)
             briefDescription = book.desc
@@ -89,6 +88,12 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
             onValueChange = { bookTitle = it },
             label = { Text("Book Title") }
         )
+        if(bookTitle.isNullOrEmpty()){
+            ErrorMessage(text = "Book title should not be empty")
+            isFormValid = false
+        } else {
+            isFormValid =true
+        }
         Text(text = "Author Name")
 
 
@@ -97,6 +102,12 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
             onValueChange = { authorName = it },
             label = { Text("Author Name") }
         )
+        if(authorName.isNullOrEmpty()){
+            ErrorMessage(text = "Authorname should not be empty")
+            isFormValid=false
+        } else {
+            isFormValid =true
+        }
         Text(text = "Price")
 
         OutlinedTextField(
@@ -110,7 +121,14 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
                 }
             },
             label = { Text("Price") },
+
         )
+        if(price<0){
+            ErrorMessage(text = "Price should not be empty or less then empty")
+            isFormValid =false
+        } else {
+            isFormValid =true
+        }
         Text(text = "Available book Number")
         OutlinedTextField(
             value = booksAvailable.toString(),
@@ -122,11 +140,23 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
                     booksAvailable = 0
                 }
             },
-            label = { Text("Price") },
+            label = { Text("Available Books") },
         )
+        if(booksAvailable<0){
+            ErrorMessage(text = "Available Books should not be empty or less then empty")
+            isFormValid = false
+        } else {
+            isFormValid =true
+        }
         Text(text = "Genre")
         Dropdown(genre) { selectedGenre ->
             genre = selectedGenre
+        }
+        if(genre.isNullOrEmpty()){
+            ErrorMessage(text = "Please fill the genre")
+            isFormValid = false
+        } else {
+            isFormValid =true
         }
         Text(text = "Published Date")
 
@@ -138,6 +168,12 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
             onValueChange = { briefDescription = it },
             label = { Text("Brief Description") }
         )
+        if(briefDescription.isNullOrEmpty()){
+            ErrorMessage(text = "Please fill the description ")
+            isFormValid = false
+        } else {
+            isFormValid =true
+        }
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = "Upload Book Cover Img")
             uploadPhotoBtn()
@@ -146,13 +182,6 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(
                 onClick = {
-                    Log.d("BookForm", "Book Title: $bookTitle")
-                    Log.d("BookForm", "Author Name: $authorName")
-                    Log.d("BookForm", "Price: $price")
-                    Log.d("BookForm", "Books Available: $booksAvailable")
-                    Log.d("BookForm", "Genre: $genre")
-                    Log.d("BookForm", "Published Date: ${publishedDate}")
-                    Log.d("BookForm", "Brief Description: $briefDescription")
                     val year = publishedDate.get(Calendar.YEAR)
                     val month = publishedDate.get(Calendar.MONTH) + 1  // Months are 0-based, so add 1
                     val day = publishedDate.get(Calendar.DAY_OF_MONTH)
@@ -194,6 +223,7 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
                 modifier = Modifier
                     .padding(top = 16.dp),
                 colors = ButtonDefaults.buttonColors(colorResource(id = R.color.green)),
+                enabled = isFormValid,
 
                 ) {
                 Text(text = "Save")
@@ -220,3 +250,9 @@ fun uploadPhotoBtn() {
 
     }
 }
+
+@Composable
+fun ErrorMessage(text:String){
+    Text(text = text, color = colorResource(id = R.color.red))
+}
+

@@ -14,19 +14,24 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.book_store.BookImage
 import com.example.book_store.Header
 import com.example.book_store.R
 import com.example.book_store.SelectedBookService
 import com.example.book_store.list.CreateDeleteUpdBookViewModel
+import kotlinx.coroutines.launch
 import models.BookDTO
 
 
@@ -49,7 +54,7 @@ fun RedirectButton(modifier: Modifier = Modifier,navController: NavController) {
 fun BookDetails(navController: NavController) {
     val book = SelectedBookService.getSelectedBook()
     Column {
-        Header("View Book Details")
+        Header(stringResource(id = R.string.view_details_page))
         RedirectButton(
             Modifier
                 .padding(top = 16.dp)
@@ -97,14 +102,15 @@ fun BookInfo(book: BookDTO) {
 
 @Composable
 fun BookList(genre: String, author: String, publishedDate: String, price: Number, available: Number) {
+
     Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier
         .height(180.dp)
         .padding(start = 20.dp)) {
-        Text(text = "Genre: $genre")
-        Text(text = "Author: $author")
-        Text(text = "Publication Year: $publishedDate")
-        Text(text = "Price: $price$")
-        Text(text = "Available: $available")
+        Text(text = stringResource(id = R.string.genere) +": $genre")
+        Text(text = stringResource(id = R.string.author)+": $author")
+        Text(text = stringResource(id = R.string.pub_year) +": $publishedDate")
+        Text(text = stringResource(id = R.string.price)+": $price$")
+        Text(text = stringResource(id = R.string.available)+": $available")
     }
 }
 
@@ -121,20 +127,6 @@ fun EditBtn(navController: NavController) {
     }
 }
 
-@Composable
-fun DeleteBtn(navController: NavController,viewModel: CreateDeleteUpdBookViewModel) {
-    Button(
-        onClick = {
-
-        },
-        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.red))
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(painterResource(id = R.drawable.delete), contentDescription = "delete icon")
-            Text(text = "Delete")
-        }
-    }
-}
 
 @Composable
 fun ViewBooksControls(navController: NavController) {
@@ -145,6 +137,27 @@ fun ViewBooksControls(navController: NavController) {
         EditBtn(navController)
     }
 }
+@Composable
+fun DeleteBtn(navController: NavController,viewModel: CreateDeleteUpdBookViewModel) {
+    val openDialog = remember { mutableStateOf(false) }
+    Button(
+        onClick = {
+            openDialog.value = true
+        },
+        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.red))
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(painterResource(id = R.drawable.delete), contentDescription = "delete icon")
+            Text(text = stringResource(id = R.string.delete))
+        }
+    }
+    DeleteBookDialog(openDialog, onConfirmDelete = {
+        viewModel.viewModelScope.launch {
+            val selectedBook = SelectedBookService.getSelectedBook() as BookDTO;
+            val result = viewModel.deleteBookByID(selectedBook.id)
+        }
+    })
+}
 
 @Composable
 fun DeleteBookDialog(
@@ -152,10 +165,11 @@ fun DeleteBookDialog(
     onConfirmDelete: () -> Unit
 ) {
     if (openDialog.value) {
+        val deleteDialogText = stringResource(id = R.string.delete_book)
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
-            title = { Text("Delete Book") },
-            text = { Text("Do you want to delete this book from the book store?") },
+            title = { Text(deleteDialogText) },
+            text = { Text(stringResource(id = R.string.delete_conf_message) ) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -163,14 +177,14 @@ fun DeleteBookDialog(
                         onConfirmDelete()
                     }
                 ) {
-                    Text("Delete")
+                    Text(stringResource(id = R.string.delete))
                 }
             },
             dismissButton = {
                 Button(
                     onClick = { openDialog.value = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.cancel))
                 }
             }
         )
