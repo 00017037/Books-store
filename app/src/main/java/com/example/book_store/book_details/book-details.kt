@@ -52,7 +52,9 @@ fun RedirectButton(modifier: Modifier = Modifier,navController: NavController) {
 
 @Composable
 fun BookDetails(navController: NavController) {
+
     val book = SelectedBookService.getSelectedBook()
+
     Column {
         Header(stringResource(id = R.string.view_details_page))
         RedirectButton(
@@ -77,6 +79,18 @@ fun BookDetails(navController: NavController) {
 
 @Composable
 fun BookInfo(book: BookDTO) {
+    val originalDateString = book.publishedDate // Assuming book.publishedDate is "yyyy-MM-dd HH:mm:ss"
+
+
+    val parts = originalDateString.split(" ")
+    val datePart = parts[0]
+
+    val dateParts = datePart.split("-")
+    val year = dateParts[0]
+    val month = dateParts[1]
+    val day = dateParts[2]
+
+    val formattedDate = "$day/$month/$year"
     Row(
         modifier = Modifier
             .padding(top = 16.dp)
@@ -92,7 +106,7 @@ fun BookInfo(book: BookDTO) {
         BookList(
             genre = book.genre,
             author = book.author,
-            publishedDate = book.publishedDate,
+            publishedDate = formattedDate,
             price = book.price,
             available = book.available
         )

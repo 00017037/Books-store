@@ -2,6 +2,7 @@ package com.example.book_store
 
 import android.app.AlertDialog
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +31,8 @@ import com.example.book_store.book_details.RedirectButton
 import com.example.book_store.list.CreateDeleteUpdBookViewModel
 import kotlinx.coroutines.launch
 import models.BookDTO
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable()
@@ -61,20 +62,24 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
     var price by remember { mutableStateOf(0) }
     var booksAvailable by remember { mutableStateOf(0) }
     var genre by remember { mutableStateOf("Detective") }
-    var publishedDate by remember { mutableStateOf(Calendar.getInstance()) }
+    var publishedDate by remember { mutableStateOf(LocalDate.now()) }
     var briefDescription by remember { mutableStateOf("") }
     val context = LocalContext.current // Retrieve the context
     val popupControl by remember{ mutableStateOf(false) }
     LaunchedEffect(key1 = book) {
         if (SelectedBookService.isEditMode) {
-            val book = SelectedBookService.getSelectedBook() as BookDTO;
+            val book = SelectedBookService.getSelectedBook() as BookDTO
             bookTitle = book.title
             authorName = book.author
             price = book.price.toInt()
-            booksAvailable =  book.available.toInt()
+            booksAvailable = book.available.toInt()
             genre = book.genre
-            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-            publishedDate.time = format.parse(book.publishedDate)
+
+            // Parse publishedDate string to LocalDate
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val parsedDate = LocalDate.parse(book.publishedDate, formatter)
+            publishedDate = parsedDate // Set the publishedDate directly as a LocalDate
+            Log.d("date",publishedDate.dayOfMonth.toString())
             briefDescription = book.desc
         }
     }
@@ -159,8 +164,7 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
             isFormValid =true
         }
         Text(text = "Published Date")
-
-        DatePicker(selectedDate = publishedDate)
+        DatePicker(selectedDate = publishedDate) { newDate -> publishedDate = newDate }
         Text(text = "Brief Description")
 
         OutlinedTextField(
@@ -182,10 +186,10 @@ fun BookForm(viewModel:CreateDeleteUpdBookViewModel) {
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(
                 onClick = {
-                    val year = publishedDate.get(Calendar.YEAR)
-                    val month = publishedDate.get(Calendar.MONTH) + 1  // Months are 0-based, so add 1
-                    val day = publishedDate.get(Calendar.DAY_OF_MONTH)
-                    var message =  "Book created successfully!";
+                    val year = publishedDate.year
+                    val month = publishedDate.monthValue
+                    val day = publishedDate.dayOfMonth
+                    var message = "Book created successfully!"
                    viewModel.viewModelScope.launch {
                        if(SelectedBookService.isEditMode){
                            message = "Book updated successfully!"

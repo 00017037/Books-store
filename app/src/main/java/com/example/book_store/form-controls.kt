@@ -1,8 +1,9 @@
 package com.example.book_store
 
 import android.app.DatePickerDialog
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -16,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,56 +25,74 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import java.util.Calendar
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
 
-fun DatePicker(selectedDate: Calendar){
-    Column {
-        val year = selectedDate.get(Calendar.YEAR)
-        val month = selectedDate.get(Calendar.MONTH) + 1  // Months are 0-based, so add 1
-        val day = selectedDate.get(Calendar.DAY_OF_MONTH)
-        var formattedDate by remember { mutableStateOf("${day}/${month + 1}/${year}") }
-        val context = LocalContext.current
-        OutlinedTextField(
-            value = formattedDate,
-            onValueChange = {},
-            label = { Text(stringResource(id = R.string.published_date_label)) },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        val datePicker = DatePickerDialog(
-                            context
-                            ,
-                            { _, year, month, day ->
-                                selectedDate.set(year, month, day)
-                                formattedDate = "${day}/${month + 1}/${year}"
-                            },
-                            selectedDate.get(Calendar.YEAR),
-                            selectedDate.get(Calendar.MONTH),
-                            selectedDate.get(Calendar.DAY_OF_MONTH)
-                        )
-                        datePicker.show()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Date Picker"
-                    )
-                }
-            })
+fun DatePicker(selectedDate: LocalDate, onDateSelected: (LocalDate) -> Unit) {
+    var formattedDate by remember { mutableStateOf(selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = formattedDate)) }
+    LaunchedEffect(selectedDate) {
+        formattedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        textFieldValue = TextFieldValue(text = formattedDate)
+
     }
 
-}
+    val context = LocalContext.current
 
+    OutlinedTextField(
+        value = textFieldValue,
+        onValueChange = {
+            textFieldValue = it
+            formattedDate = it.text
+            try {
+                val parsedDate = LocalDate.parse(formattedDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                onDateSelected(parsedDate)
+            } catch (e: Exception) {
+                // Handle parsing exceptions here
+            }
+        },
+        label = { Text(stringResource(id = R.string.published_date_label)) },
+        trailingIcon = {
+            IconButton(
+                onClick = {
+                    val datePicker = DatePickerDialog(
+                        context,
+                        { _, year, month, day ->
+                            val selectedDate = LocalDate.of(year, month + 1, day)
+                            formattedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            textFieldValue = TextFieldValue(text = formattedDate)
+                            onDateSelected(selectedDate)
+                        },
+                        selectedDate.year,
+                        selectedDate.monthValue - 1,
+                        selectedDate.dayOfMonth
+                    )
+                    datePicker.show()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Date Picker"
+                )
+            }
+        }
+    )
+}
 @ExperimentalMaterial3Api
 @Composable
 fun Dropdown(selectedGenre: String, onGenreSelected: (String) -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
     var genre by remember {
         mutableStateOf(selectedGenre)
+    }
+    LaunchedEffect(selectedGenre){
+        genre = selectedGenre
     }
     Box(
         modifier = Modifier.padding(top = 5.dp)
